@@ -94,8 +94,6 @@ PRODUCT_PACKAGES += \
 
 # Extra Optional packages
 PRODUCT_PACKAGES += \
-    fosCenter \
-    fosFileManager \
     LatinIME \
     BluetoothExt \
     DashClock
