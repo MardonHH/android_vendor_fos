@@ -1,6 +1,3 @@
-# Inherit common stuff
-$(call inherit-product, vendor/fos/config/common.mk)
-
 # World APN list
 PRODUCT_COPY_FILES += \
     vendor/fos/prebuilt/common/etc/apns-conf.xml:system/etc/apns-conf.xml

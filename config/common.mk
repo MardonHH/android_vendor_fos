@@ -28,21 +28,17 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_COPY_FILES += \
     vendor/fos/prebuilt/common/bin/backuptool.sh:system/bin/backuptool.sh \
     vendor/fos/prebuilt/common/bin/backuptool.functions:system/bin/backuptool.functions \
-    vendor/fos/prebuilt/common/bin/50-fos.sh:system/addon.d/50-fos.sh \
+    vendor/fos/prebuilt/common/bin/50-fos.sh:system/addon.d/50-slim.sh \
     vendor/fos/prebuilt/common/bin/99-backup.sh:system/addon.d/99-backup.sh \
     vendor/fos/prebuilt/common/etc/backup.conf:system/etc/backup.conf
 
 # fos-specific init file
 PRODUCT_COPY_FILES += \
-    vendor/fos/prebuilt/common/etc/init.local.rc:root/init.fos.rc
+    vendor/fos/prebuilt/common/etc/init.local.rc:root/init.slim.rc
 
 # Copy latinime for gesture typing
 PRODUCT_COPY_FILES += \
     vendor/fos/prebuilt/common/lib/libjni_latinime.so:system/lib/libjni_latinime.so
-
-# Copy libgif for Nova Launcher 3.0
-PRODUCT_COPY_FILES += \
-    vendor/fos/prebuilt/common/lib/libgif.so:system/lib/libgif.so
 
 # SELinux filesystem labels
 PRODUCT_COPY_FILES += \
@@ -61,10 +57,6 @@ PRODUCT_COPY_FILES += \
     vendor/fos/prebuilt/common/etc/init.d/00banner:system/etc/init.d/00banner \
     vendor/fos/prebuilt/common/etc/init.d/90userinit:system/etc/init.d/90userinit \
     vendor/fos/prebuilt/common/bin/sysinit:system/bin/sysinit
-
-# Workaround for NovaLauncher zipalign fails
-PRODUCT_COPY_FILES += \
-    vendor/fos/prebuilt/common/app/NovaLauncher.apk:system/app/NovaLauncher.apk
 
 # Embed SuperUser
 SUPERUSER_EMBEDDED := true
@@ -98,75 +90,16 @@ PRODUCT_PACKAGES += \
     BluetoothExt \
     DashClock
 
+#    fosFileManager removed until updated
+
 # Extra tools
 PRODUCT_PACKAGES += \
     openvpn \
     e2fsck \
     mke2fs \
     tune2fs \
-    mount.exfat \
-    fsck.exfat \
-    mkfs.exfat
-
+  
 # easy way to extend to add more packages
 -include vendor/extra/product.mk
 
 PRODUCT_PACKAGE_OVERLAYS += vendor/fos/overlay/common
-
-# Boot animation include
-ifneq ($(TARGET_SCREEN_WIDTH) $(TARGET_SCREEN_HEIGHT),$(space))
-
-# determine the smaller dimension
-TARGET_BOOTANIMATION_SIZE := $(shell \
-  if [ $(TARGET_SCREEN_WIDTH) -lt $(TARGET_SCREEN_HEIGHT) ]; then \
-    echo $(TARGET_SCREEN_WIDTH); \
-  else \
-    echo $(TARGET_SCREEN_HEIGHT); \
-  fi )
-
-# get a sorted list of the sizes
-bootanimation_sizes := $(subst .zip,, $(shell ls vendor/fos/prebuilt/common/bootanimation))
-bootanimation_sizes := $(shell echo -e $(subst $(space),'\n',$(bootanimation_sizes)) | sort -rn)
-
-# find the appropriate size and set
-define check_and_set_bootanimation
-$(eval TARGET_BOOTANIMATION_NAME := $(shell \
-  if [ -z "$(TARGET_BOOTANIMATION_NAME)" ]; then
-    if [ $(1) -le $(TARGET_BOOTANIMATION_SIZE) ]; then \
-      echo $(1); \
-      exit 0; \
-    fi;
-  fi;
-  echo $(TARGET_BOOTANIMATION_NAME); ))
-endef
-$(foreach size,$(bootanimation_sizes), $(call check_and_set_bootanimation,$(size)))
-
-PRODUCT_COPY_FILES += \
-    vendor/fos/prebuilt/common/bootanimation/$(TARGET_BOOTANIMATION_NAME).zip:system/media/bootanimation.zip
-endif
-
-# Versioning System
-# KitKat fosKat freeze code
-PRODUCT_VERSION_MAJOR = 4.4.4
-PRODUCT_VERSION_MINOR = build
-PRODUCT_VERSION_MAINTENANCE = 8.6.1
-ifdef fos_BUILD_EXTRA
-    fos_POSTFIX := -$(fos_BUILD_EXTRA)
-endif
-ifndef fos_BUILD_TYPE
-    fos_BUILD_TYPE := UNOFFICIAL
-    PLATFORM_VERSION_CODENAME := UNOFFICIAL
-    fos_POSTFIX := -$(shell date +"%Y%m%d-%H%M")
-endif
-
-# Set all versions
-fos_VERSION := fos-$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR).$(PRODUCT_VERSION_MAINTENANCE)-$(fos_BUILD_TYPE)$(fos_POSTFIX)
-fos_MOD_VERSION := fos-$(fos_BUILD)-$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR).$(PRODUCT_VERSION_MAINTENANCE)-$(fos_BUILD_TYPE)$(fos_POSTFIX)
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    BUILD_DISPLAY_ID=$(BUILD_ID) \
-    fos.ota.version=$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR).$(PRODUCT_VERSION_MAINTENANCE) \
-    ro.fos.version=$(fos_VERSION) \
-    ro.modversion=$(fos_MOD_VERSION) \
-    ro.fos.buildtype=$(fos_BUILD_TYPE)
-
