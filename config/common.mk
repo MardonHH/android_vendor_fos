@@ -28,7 +28,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_COPY_FILES += \
     vendor/fos/prebuilt/common/bin/backuptool.sh:system/bin/backuptool.sh \
     vendor/fos/prebuilt/common/bin/backuptool.functions:system/bin/backuptool.functions \
-    vendor/fos/prebuilt/common/bin/50-fos.sh:system/addon.d/50-slim.sh \
+    vendor/fos/prebuilt/common/bin/50-slim.sh:system/addon.d/50-slim.sh \
     vendor/fos/prebuilt/common/bin/99-backup.sh:system/addon.d/99-backup.sh \
     vendor/fos/prebuilt/common/etc/backup.conf:system/etc/backup.conf
 
